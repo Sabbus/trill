@@ -6,7 +6,14 @@
                    expansion_queue_is_empty/1, empty_expansion_queue/1, 
                    same_tableau/2, new_abox/1, add_to_tableau/3, 
                    remove_from_tableau/3, add_clash_to_tableau/4, assign/2, 
-                   find/2, control/2]).
+                   find/2, control/2, add_to_abox/3, remove_from_abox/3,
+                   add_to_clashes/3, add_all_to_tableau/4, 
+                   add_all_to_abox_and_clashes/7, add_all_to_abox/3,
+                   update_expansion_queue_in_tableau/5, 
+                   update_expansion_queue/5, init_expansion_queue/3, 
+                   add_classes_expqueue/3, add_prop_expqueue/3, new_tabs/1, 
+                   create_tabs/3, create_tabs_int/3, add_edge/5, 
+                   add_edge_int/5, add_node_to_tree/5, add_role_to_tree/5]).
 
 /** <module> tableau
 
@@ -252,16 +259,16 @@ remove_from_abox(Clashes0,El,Clashes):-
 
 /*
  add_all_to_tableau(M,L1,L2,LO).
-  add in L2 all item of L1
-  */
- add_all_to_tableau(M,L,Tableau0,Tableau):-
-     get_abox(Tableau0,ABox0),
-     get_clashes(Tableau0,Clashes0),
-     add_all_to_abox_and_clashes(M,L,Tableau0,ABox0,ABox,Clashes0,Clashes),
-     set_abox(Tableau0,ABox,Tableau1),
-     set_clashes(Tableau1,Clashes,Tableau).
+ add in L2 all item of L1
+ */
+add_all_to_tableau(M,L,Tableau0,Tableau):-
+    get_abox(Tableau0,ABox0),
+    get_clashes(Tableau0,Clashes0),
+    add_all_to_abox_and_clashes(M,L,Tableau0,ABox0,ABox,Clashes0,Clashes),
+    set_abox(Tableau0,ABox,Tableau1),
+    set_clashes(Tableau1,Clashes,Tableau).
 
- add_all_to_abox_and_clashes(_,[],_,A,A,C,C).
+add_all_to_abox_and_clashes(_,[],_,A,A,C,C).
 
 add_all_to_abox_and_clashes(M,[(classAssertion(Class,I),Expl)|T],Tab0,A0,A,C0,C):-
     check_clash(M,Class-I,Tab0),!,
@@ -318,36 +325,40 @@ update_expansion_queue_in_tableau(M,P,Ind1,Ind2,Tab0,Tab):-
     update_expansion_queue(M,P,Ind1,Ind2,ExpansionQueue0,ExpansionQueue),
     set_expansion_queue(Tab0,ExpansionQueue,Tab).
 
+update_expansion_queue(_,unionOf(L),Ind,[DQ,NDQ0],[DQ,NDQ]):-
+    !,
+    delete(NDQ0,[unionOf(L),Ind],NDQ1),
+    append(NDQ1,[[unionOf(L),Ind]],NDQ).
 
+update_expansion_queue(_,maxCardinality(N,S,C),Ind,[DQ,NDQ0],[DQ,NDQ]):-
+    !,
+    delete(NDQ0,[maxCardinality(N,S,C),Ind],NDQ1),
+    append(NDQ1,[[maxCardinality(N,S,C),Ind]],NDQ).
 
-update_expansion_queue(_,unionOf(L),Ind,[DQ,NDQ0],[DQ,NDQ]):-!,
-delete(NDQ0,[unionOf(L),Ind],NDQ1),
-append(NDQ1,[[unionOf(L),Ind]],NDQ).
+update_expansion_queue(_,maxCardinality(N,S),Ind,[DQ,NDQ0],[DQ,NDQ]):-
+    !,
+    delete(NDQ0,[maxCardinality(N,S),Ind],NDQ1),
+    append(NDQ1,[[maxCardinality(N,S),Ind]],NDQ).
 
-update_expansion_queue(_,maxCardinality(N,S,C),Ind,[DQ,NDQ0],[DQ,NDQ]):-!,
-delete(NDQ0,[maxCardinality(N,S,C),Ind],NDQ1),
-append(NDQ1,[[maxCardinality(N,S,C),Ind]],NDQ).
+update_expansion_queue(_,exactCardinality(N,S,C),Ind,[DQ,NDQ0],[DQ,NDQ]):-
+    !,
+    delete(NDQ0,[exactCardinality(N,S,C),Ind],NDQ1),
+    append(NDQ1,[[exactCardinality(N,S,C),Ind]],NDQ).
 
-update_expansion_queue(_,maxCardinality(N,S),Ind,[DQ,NDQ0],[DQ,NDQ]):-!,
-delete(NDQ0,[maxCardinality(N,S),Ind],NDQ1),
-append(NDQ1,[[maxCardinality(N,S),Ind]],NDQ).
+update_expansion_queue(_,exactCardinality(N,S),Ind,[DQ,NDQ0],[DQ,NDQ]):-
+    !,
+    delete(NDQ0,[exactCardinality(N,S),Ind],NDQ1),
+    append(NDQ1,[[exactCardinality(N,S),Ind]],NDQ).
 
-update_expansion_queue(_,exactCardinality(N,S,C),Ind,[DQ,NDQ0],[DQ,NDQ]):-!,
-delete(NDQ0,[exactCardinality(N,S,C),Ind],NDQ1),
-append(NDQ1,[[exactCardinality(N,S,C),Ind]],NDQ).
+update_expansion_queue(_,C,Ind,[DQ0,NDQ],[DQ,NDQ]):-
+    !,
+    delete(DQ0,[C,Ind],DQ1),
+    append(DQ1,[[C,Ind]],DQ).
 
-update_expansion_queue(_,exactCardinality(N,S),Ind,[DQ,NDQ0],[DQ,NDQ]):-!,
-delete(NDQ0,[exactCardinality(N,S),Ind],NDQ1),
-append(NDQ1,[[exactCardinality(N,S),Ind]],NDQ).
-
-update_expansion_queue(_,C,Ind,[DQ0,NDQ],[DQ,NDQ]):-!,
-delete(DQ0,[C,Ind],DQ1),
-append(DQ1,[[C,Ind]],DQ).
-
-update_expansion_queue(_,P,Ind1,Ind2,[DQ0,NDQ],[DQ,NDQ]):-!,
-delete(DQ0,[P,Ind1,Ind2],DQ1),
-append(DQ1,[[P,Ind1,Ind2]],DQ).
-
+update_expansion_queue(_,P,Ind1,Ind2,[DQ0,NDQ],[DQ,NDQ]):-
+    !,
+    delete(DQ0,[P,Ind1,Ind2],DQ1),
+    append(DQ1,[[P,Ind1,Ind2]],DQ).
 
 init_expansion_queue(LCA,LPA,EQ):-
     empty_expansion_queue(EmptyEQ),
@@ -365,9 +376,6 @@ add_prop_expqueue([],EQ,EQ).
 add_prop_expqueue([(propertyAssertion(P,S,O),_)|T],EQ0,EQ):-
     update_expansion_queue(_,P,S,O,EQ0,EQ1),
     add_prop_expqueue(T,EQ1,EQ).
-
-
-
 
 % ===================================
 % TABS
@@ -392,7 +400,6 @@ create_tabs(L,Tableau0,Tableau):-
     create_tabs_int(L,Tabs0,Tabs),
     set_tabs(Tableau0,Tabs,Tableau).
 
-
 create_tabs_int([],G,G).
 
 create_tabs_int([(propertyAssertion(P,S,O),_Expl)|T],Tabl0,Tabl):-
@@ -406,7 +413,6 @@ create_tabs_int([(differentIndividuals(Ld),_Expl)|Tail],(T0,RBN,RBR),Tabs):-
 create_tabs_int([(classAssertion(_,I),_Expl)|Tail],(T0,RBN,RBR),Tabs):-
     add_vertices(T0,[I],T1),
     create_tabs_int(Tail,(T1,RBN,RBR),Tabs).
-
 
 /*
  add edge to tableau
@@ -425,20 +431,24 @@ add_edge_int(P,S,O,(T0,ItR0,RtI0),(T1,ItR1,RtI1)):-
 
 add_node_to_tree(P,S,O,RB0,RB1):-
     rb_lookup((S,O),V,RB0),
-    \+ member(P,V),!,
+    \+ member(P,V),
+    !,
     rb_update(RB0,(S,O),[P|V],RB1).
 
 add_node_to_tree(P,S,O,RB0,RB0):-
     rb_lookup((S,O),V,RB0),
-    member(P,V),!.
+    member(P,V),
+    !.
 
 add_node_to_tree(P,S,O,RB0,RB1):-
-    \+ rb_lookup([S,O],_,RB0),!,
+    \+ rb_lookup([S,O],_,RB0),
+    !,
     rb_insert(RB0,(S,O),[P],RB1).
 
 add_role_to_tree(P,S,O,RB0,RB1):-
     rb_lookup(P,V,RB0),
-    \+ member((S,O),V),!,
+    \+ member((S,O),V),
+    !,
     rb_update(RB0,P,[(S,O)|V],RB1).
 
 add_role_to_tree(P,S,O,RB0,RB0):-
