@@ -1,13 +1,11 @@
-
-
 :- format(user_error,
 	  'TRILL test suite.  To run all tests run ?- test.~n~n', []).
 test:-
-  use_module(library(trill_test/test_trill)),
+  use_module('./trill/prolog/trill_test/test_trill.pl'),
   test_trill,
-  unload_file(library(trill_test/test_trill)),
-  use_module(library(trill_test/test_trillp)),
+  unload_file('./trill/prolog/trill_test/test_trill.pl'),
+  use_module('./trill/prolog/trill_test/test_trillp.pl'),
   test_trillp,
-  unload_file(library(trill_test/test_trillp)),
-  use_module(library(trill_test/test_tornado)),
+  unload_file('./trill/prolog/trill_test/test_trillp.pl'),
+  use_module('./trill/prolog/trill_test/test_tornado.pl'),
   test_tornado.
