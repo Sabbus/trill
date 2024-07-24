@@ -3173,27 +3173,27 @@ init_tableau(ABox,Tabs,[ABox,Tabs,[]]).
 
 /* abox as a list */
 
- new_abox([]).
+new_abox([]).
 
 
 /* add El to ABox */
- add_to_tableau(Tableau0,El,Tableau):-
-     get_abox(Tableau0,ABox0),
-     add_to_abox(ABox0,El,ABox),
-     set_abox(Tableau0,ABox,Tableau).
+add_to_tableau(Tableau0,El,Tableau):-
+    get_abox(Tableau0,ABox0),
+    add_to_abox(ABox0,El,ABox),
+    set_abox(Tableau0,ABox,Tableau).
 
- remove_from_tableau(Tableau0,El,Tableau):-
-     get_abox(Tableau0,ABox0),
-     remove_from_abox(ABox0,El,ABox),
-     set_abox(Tableau0,ABox,Tableau).
+remove_from_tableau(Tableau0,El,Tableau):-
+    get_abox(Tableau0,ABox0),
+    remove_from_abox(ABox0,El,ABox),
+    set_abox(Tableau0,ABox,Tableau).
 
- add_clash_to_tableau(M,Tableau0,ToCheck,Tableau):-
-     check_clash(M,ToCheck,Tableau0),!,
-     get_clashes(Tableau0,Clashes0),
-     add_to_clashes(Clashes0,ToCheck,Clashes),
-     set_clashes(Tableau0,Clashes,Tableau).
+add_clash_to_tableau(M,Tableau0,ToCheck,Tableau):-
+    check_clash(M,ToCheck,Tableau0),!,
+    get_clashes(Tableau0,Clashes0),
+    add_to_clashes(Clashes0,ToCheck,Clashes),
+    set_clashes(Tableau0,Clashes,Tableau).
 
- add_clash_to_tableau(_,Tableau,_,Tableau).
+add_clash_to_tableau(_,Tableau,_,Tableau).
 
 assign(L,L).
 /*
@@ -3220,7 +3220,7 @@ find((Ass,Ex),A):-
 /* end of abox as a rb tree */
 
 
- add_to_abox(ABox,El,[El|ABox]).
+add_to_abox(ABox,El,[El|ABox]).
 
 remove_from_abox(ABox0,El,ABox):-
     delete(ABox0,El,ABox).
@@ -3282,30 +3282,30 @@ add_all_to_abox([H|T],A0,A):-
 
 
 
- % ===================================
- % EXPANSION QUEUE
- % ===================================
+% ===================================
+% EXPANSION QUEUE
+% ===================================
 
 
 
- % ------------
- % Utility for rule application
- % ------------
- update_expansion_queue_in_tableau(M,C,Ind,Tab0,Tab):-
-     get_expansion_queue(Tab0,ExpansionQueue0),
-     update_expansion_queue(M,C,Ind,ExpansionQueue0,ExpansionQueue),
-     set_expansion_queue(Tab0,ExpansionQueue,Tab).
+% ------------
+% Utility for rule application
+% ------------
+update_expansion_queue_in_tableau(M,C,Ind,Tab0,Tab):-
+    get_expansion_queue(Tab0,ExpansionQueue0),
+    update_expansion_queue(M,C,Ind,ExpansionQueue0,ExpansionQueue),
+    set_expansion_queue(Tab0,ExpansionQueue,Tab).
 
- update_expansion_queue_in_tableau(M,P,Ind1,Ind2,Tab0,Tab):-
-     get_expansion_queue(Tab0,ExpansionQueue0),
-     update_expansion_queue(M,P,Ind1,Ind2,ExpansionQueue0,ExpansionQueue),
-     set_expansion_queue(Tab0,ExpansionQueue,Tab).
+update_expansion_queue_in_tableau(M,P,Ind1,Ind2,Tab0,Tab):-
+    get_expansion_queue(Tab0,ExpansionQueue0),
+    update_expansion_queue(M,P,Ind1,Ind2,ExpansionQueue0,ExpansionQueue),
+    set_expansion_queue(Tab0,ExpansionQueue,Tab).
 
 
 
- update_expansion_queue(_,unionOf(L),Ind,[DQ,NDQ0],[DQ,NDQ]):-!,
- delete(NDQ0,[unionOf(L),Ind],NDQ1),
- append(NDQ1,[[unionOf(L),Ind]],NDQ).
+update_expansion_queue(_,unionOf(L),Ind,[DQ,NDQ0],[DQ,NDQ]):-!,
+delete(NDQ0,[unionOf(L),Ind],NDQ1),
+append(NDQ1,[[unionOf(L),Ind]],NDQ).
 
 update_expansion_queue(_,maxCardinality(N,S,C),Ind,[DQ,NDQ0],[DQ,NDQ]):-!,
 delete(NDQ0,[maxCardinality(N,S,C),Ind],NDQ1),
