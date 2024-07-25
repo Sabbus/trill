@@ -16,11 +16,11 @@ test_tornado:-
     non_det,
     local_cons]).
 
-:- use_module(library(trill_test/trill_test)).
+:- use_module('./trill/prolog/trill_test/trill_test.pl').
 
 :- begin_tests(tornado_brca, []).
 
-:- consult(library('examples/BRCA.pl')).
+:- consult('./trill/prolog/examples/BRCA.pl').
 
 test(p_wlbrcr_h):-
   run((prob_instanceOf('WomanUnderLifetimeBRCRisk','Helen',Prob),close_to(Prob,0.123))).
@@ -32,7 +32,7 @@ test(p_wa_wulbrcr):-
 
 :- begin_tests(tornado_vicodi, []).
 
-:- consult(library(examples/vicodi)).
+:- consult('./trill/prolog/examples/vicodi.pl').
 
 test(p_r_avdpf):-
   run((prob_instanceOf('vicodi:Role','vicodi:Anthony-van-Dyck-is-Painter-in-Flanders',Prob),close_to(Prob,0.27540000000000003))).
@@ -44,7 +44,7 @@ test(p_p_r):-
 
 :- begin_tests(tornado_commander, []).
 
-:- consult(library(examples/commander)).
+:- consult('./trill/prolog/examples/commander.pl').
 
 test(e_c_j):-
   run((prob_instanceOf(commander,john,Prob),close_to(Prob,1))).
@@ -54,7 +54,7 @@ test(e_c_j):-
 
 :- begin_tests(tornado_peoplePets, []).
 
-:- consult(library(examples/peoplePets)).
+:- consult('./trill/prolog/examples/peoplePets.pl').
 
 test(p_nl_k):-
   run((prob_instanceOf('natureLover','Kevin',Prob),close_to(Prob,0.8696))).
@@ -64,7 +64,7 @@ test(p_nl_k):-
 
 :- begin_tests(tornado_biopax, []).
 
-:- consult(library(examples/biopaxLevel3)).
+:- consult('./trill/prolog/examples/biopaxLevel3.pl').
 
 test(p_twbr_e):-
   run((prob_sub_class('biopax:TransportWithBiochemicalReaction','biopax:Entity',Prob),close_to(Prob,0.98))).
@@ -73,7 +73,7 @@ test(p_twbr_e):-
 
 :- begin_tests(tornado_biopax_rdf, []).
 
-:- ensure_loaded(library(trill)).
+:- ensure_loaded('./trill/prolog/trill.pl').
 
 test(p_twbr_e):-
   run((init_trill(tornado),load_owl_kb('../examples/biopaxLevel3_rdf.owl'),prob_sub_class('biopax:TransportWithBiochemicalReaction','biopax:Entity',Prob),close_to(Prob,0.98))).
@@ -83,7 +83,7 @@ test(p_twbr_e):-
 
 :- begin_tests(tornado_dbpedia, []).
 
-:- consult(library('examples/DBPedia.pl')).
+:- consult('./trill/prolog/examples/DBPedia.pl').
 
 test(p_p_pp):-
   run((prob_sub_class('dbpedia:Place','dbpedia:PopulatedPlace',Prob),close_to(Prob,0.8273765902816))).
@@ -93,7 +93,7 @@ test(p_p_pp):-
 
 :- begin_tests(tornado_johnEmployee, []).
 
-:- consult(library(examples/johnEmployee)).
+:- consult('./trill/prolog/examples/johnEmployee.pl').
 
 test(p_p_j):-
   run((prob_instanceOf('johnEmployee:person','johnEmployee:john',Prob),close_to(Prob,1))).
@@ -102,7 +102,7 @@ test(p_p_j):-
 
 :- begin_tests(tornado_pizza, []).
 
-:- consult(library(examples/pizza)).
+:- consult('./trill/prolog/examples/pizza.pl').
 
 test(p_inc_kb):-
   run_fail((prob_inconsistent_theory(_))).
@@ -113,7 +113,7 @@ test(p_uns_tof):-
 
 :- begin_tests(non_det, []).
 
-:- consult(library(examples/example_or_rule)).
+:- consult('./trill/prolog/examples/example_or_rule.pl').
 
 test(p_u_a):-
   run((prob_unsat(a,Prob),close_to(Prob,0.03393568))).
@@ -123,7 +123,7 @@ test(p_u_a):-
 
 :- begin_tests(local_cons, []).
 
-:- consult(library(examples/local_inconsistent_kb)).
+:- consult('./trill/prolog/examples/local_inconsistent_kb.pl').
 
 %test(p_in):-
 %  run((prob_inconsistent_theory(Prob),close_to(Prob,1.0))).

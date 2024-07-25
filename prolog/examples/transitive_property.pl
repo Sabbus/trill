@@ -1,4 +1,4 @@
-:- use_module(library(trill)).
+:- use_module('./trill/prolog/trill.pl').
 
 
 :- trill. % or :- trillp. or :- tornado.

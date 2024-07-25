@@ -1,5 +1,3 @@
-
-
 :-module(trill_test,
   [close_to/2,close_to/3,run/1,run_fail/1]).
 

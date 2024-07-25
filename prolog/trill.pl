@@ -3058,23 +3058,23 @@ compute_prob_ax1([Prob1 | T],Prob):-
 /************************/
 
 unload_all_algorithms :-
-  unload_file(library(trill_internal)),
-  unload_file(library(trillp_internal)),
-  unload_file(library(tornado_internal)).
+  unload_file('./trill/prolog/trill_internal.pl'),
+  unload_file('./trill/prolog/trillp_internal.pl'),
+  unload_file('./trill/prolog/tornado_internal.pl').
 
 set_algorithm(M:trill):-
   unload_all_algorithms,
-  consult(library(trill_internal)),
+  consult('./trill/prolog/trill_internal.pl'),
   clean_up(M),!.
 
 set_algorithm(M:trillp):-
   unload_all_algorithms,
-  consult(library(trillp_internal)),
+  consult('./trill/prolog/trillp_internal.pl'),
   clean_up(M),!.
 
 set_algorithm(M:tornado):-
   unload_all_algorithms,
-  consult(library(tornado_internal)),
+  consult('./trill/prolog/tornado_internal.pl'),
   clean_up(M),!.
 
 
@@ -4097,7 +4097,7 @@ sandbox:safe_meta(trill:load_kb(_),[]).
 sandbox:safe_meta(trill:load_owl_kb(_),[]).
 sandbox:safe_meta(trill:set_tableau_expansion_rules(_,_),[]).
 
-:- use_module(library(utility_translation)).
+:- use_module('./trill/prolog/utility_translation.pl').
 
 user:term_expansion((:- trill),[]):-
   utility_translation:get_module(M),
