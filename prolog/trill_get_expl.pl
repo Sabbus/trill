@@ -1,6 +1,3 @@
-
-
-
 % get_explanation(M,Expl):-
     % ottengo tableau da assertion
     % applico regole con apply_rule finchè non arrivo a clash
