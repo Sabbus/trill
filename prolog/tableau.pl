@@ -13,7 +13,17 @@
                    update_expansion_queue/5, init_expansion_queue/3, 
                    add_classes_expqueue/3, add_prop_expqueue/3, new_tabs/1, 
                    create_tabs/3, create_tabs_int/3, add_edge/5, 
-                   add_edge_int/5, add_node_to_tree/5, add_role_to_tree/5]).
+                   add_edge_int/5, add_node_to_tree/5, add_role_to_tree/5,
+                   add_edge_to_tabl/5, graph_edge/3, 
+                   remove_all_nodes_from_tree/5, remove_role_from_tree/5,
+                   remove_edge_from_table/5, remove_node_from_table/3, merge/6,
+                   merge_tabs/4, remove_nodes/4, remove_node/3, remove_node1/6,
+                   remove_node2/6, remove_edges/5, set_predecessor/5,
+                   set_predecessor1/5, merge_abox/7, check_merged_classes/4,
+                   update_clashes_after_merge/6, 
+                   update_expansion_queue_after_merge/4, 
+                   update_expansion_queue_after_merge_int/4, 
+                   substitute_individual/4]).
 
 /** <module> tableau
 
@@ -533,10 +543,6 @@ remove_edge_from_table(_P,S,O,T0,T1):-
 remove_node_from_table(S,T0,T1):-
     del_vertices(T0,[S],T1).
 
-
-
-
-
 % ===================================
 % FUNCTIONS ON ABOX AND TABS
 % ===================================
@@ -589,7 +595,6 @@ merge(M,X,Y,Expl,Tableau0,Tableau):-
     get_expansion_queue(Tableau3,ExpQ0),
     update_expansion_queue_after_merge(L,SI,ExpQ0,ExpQ),
     set_expansion_queue(Tableau3,ExpQ,Tableau).
-
 
 /*
  * merge node in tableau. X and Y single individuals
