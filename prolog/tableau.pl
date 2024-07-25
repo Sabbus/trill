@@ -24,6 +24,8 @@
                    update_expansion_queue_after_merge/4, 
                    update_expansion_queue_after_merge_int/4, 
                    substitute_individual/4]).
+:- use_module('./trill/prolog/trill_internal.pl').
+
 
 /** <module> tableau
 
