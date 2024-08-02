@@ -144,6 +144,7 @@ find_expls(M,[_Clash|Clashes],Tab,E):-
 find_expls_from_tab_list(M,[],E):-%gtrace,
   %findall(Exp-CPs,M:exp_found([C,I,CPs],Exp),Expl),
   %dif(Expl,[]),
+  trace,
   findall(Ex0,find_expls_from_choice_point_list(M,Ex0),L0),
   findall(Ex1,M:exp_found(_,Ex1),L1),
   append(L0,L1,L),

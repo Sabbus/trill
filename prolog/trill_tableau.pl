@@ -6,6 +6,18 @@
 % As Dict
 % ======================================================================
 
+:- module(tableau, [new_abox/1, new_tabs/1, init_expansion_queue/3, 
+                   init_tableau/4, add_all_to_tableau/4, get_tabs/2, 
+                   absence_of_clashes/1, add_to_tableau/3, create_tabs/3, 
+                   add_clash_to_tableau/4, update_expansion_queue_in_tableau/5,
+                   update_expansion_queue_in_tableau/6,
+                   set_next_from_expansion_queue/3, expansion_queue_is_empty/1,
+                   get_solved_clashes/2, neg_class/2, findClassAssertion/4,
+                   extract_current_from_expansion_queue/2,
+                   findPropertyAssertion/5]).
+
+:- use_module(library(rbtrees)).
+
 
 
 
@@ -81,6 +93,9 @@ set_tabs(Tab0,Tabs,Tab):-
 get_clashes(Tab,Clashes):-
     Clashes = Tab.clashes.
 
+get_solved_clashes(Tab,SolvedClashes):-
+  _-SolvedClashes = Tab.clashes.
+
 set_clashes(Tab0,Clashes,Tab):-
     Tab = Tab0.put(clashes,Clashes).
 
@@ -90,6 +105,8 @@ get_expansion_queue(Tab,ExpansionQueue):-
 set_expansion_queue(Tab0,ExpansionQueue,Tab):-
     Tab = Tab0.put(expq,ExpansionQueue).
 
+extract_current_from_expansion_queue(Tab,EA):-
+  get_expansion_queue(Tab,[[EA],_,_]),!.
 
 
 % --------------------------------------------------------------------------------
@@ -99,6 +116,11 @@ absence_of_clashes(Tab):-
     Clashes=[].
 
 
+
+set_next_from_expansion_queue(Tab0,EA,Tab):-
+  get_expansion_queue(Tab0,EQ0),
+  extract_from_expansion_queue_int(EQ0,EA,EQ),!,
+  set_expansion_queue(Tab0,EQ,Tab).
 
 extract_from_expansion_queue(Tab0,EA,Tab):-
     get_expansion_queue(Tab0,EQ0),
@@ -178,16 +200,17 @@ assign(L,L).
 
  add_to_abox(ABox,El,[El|ABox]).
 
-  remove_from_abox(ABox0,El,ABox):-
-      delete(ABox0,El,ABox).
 
+add_to_clashes(Clashes,'http://www.w3.org/2002/07/owl#Nothing'-_,[owlnothing|Clashes]):-!.
 
-  add_to_clashes(Clashes,'http://www.w3.org/2002/07/owl#Nothing'-_,[owlnothing|Clashes]):-!.
+add_to_clashes(Clashes,El,[El|Clashes]).
 
-  add_to_clashes(Clashes,El,[El|Clashes]).
-
-  remove_from_abox(Clashes0,El,Clashes):-
+remove_from_abox(Clashes0,El,Clashes):-
       delete(Clashes0,El,Clashes).
+
+remove_from_abox(ABox0,El,ABox):-
+    delete(ABox0,El,ABox).
+
 
   /*
    add_all_to_tableau(M,L1,L2,LO).
@@ -647,7 +670,8 @@ assign(L,L).
   % if last argument is 0 -> need to theck clash for sameIndividual/differentIndividual
   % if there is no clash (check_clash returns false), backtrack to (*)
   update_clashes_after_merge(M,_,SI,Tableau,[],[SI],0):-
-      check_clash(M,SI,Tableau),!.
+      check_clash(M,SI,Tableau),
+      !.
 
   % (*)
   update_clashes_after_merge(_,_,_,_,[],[],_).
@@ -698,5 +722,118 @@ assign(L,L).
   substitute_individual(_,I,_,I):-!.
 
 
+:- multifile check_clash/3.
+
+check_clash(_,'http://www.w3.org/2002/07/owl#Nothing'-_,_):-
+  %write('clash 6'),nl,
+  !.
+
+check_clash(_,C-Ind,Tab):-
+  get_abox(Tab,ABox),
+  %write('clash 1'),nl,
+  neg_class(C,NegC),
+  findClassAssertion(NegC,Ind,_,ABox),!.
+  
+check_clash(_,sameIndividual(LS),Tab):-
+  get_abox(Tab,ABox),
+  %write('clash 2.a'),nl,
+  find((differentIndividuals(LD),_Expl2),ABox),
+  member(X,LS),
+  member(Y,LS),
+  member(X,LD),
+  member(Y,LD),
+  dif(X,Y),!.
+  
+check_clash(_,differentIndividuals(LS),Tab):-
+  get_abox(Tab,ABox),
+  %write('clash 2.b'),nl,
+  find((sameIndividual(LD),_Expl2),ABox),
+  member(X,LS),
+  member(Y,LS),
+  member(X,LD),
+  member(Y,LD),
+  dif(X,Y),!.
+  
+check_clash(_,C-sameIndividual(L1),Tab):-
+  get_abox(Tab,ABox),
+  %write('clash 3'),nl,
+  neg_class(C,NegC),
+  findClassAssertion(NegC,sameIndividual(L2),_Expl2,ABox),
+  member(X,L1),
+  member(X,L2),!.
+  
+check_clash(_,C-Ind1,Tab):-
+  get_abox(Tab,ABox),
+  %write('clash 4'),nl,
+  neg_class(C,NegC),
+  findClassAssertion(NegC,sameIndividual(L2),_Expl2,ABox),
+  member(Ind1,L2),!.
+  
+check_clash(_,C-sameIndividual(L1),Tab):-
+  get_abox(Tab,ABox),
+  %write('clash 5'),nl,
+  neg_class(C,NegC),
+  findClassAssertion(NegC,Ind2,_,ABox),
+  member(Ind2,L1),!.
+  
+check_clash(M,C1-Ind,Tab):-
+  get_abox(Tab,ABox),
+  %write('clash 7'),nl,
+  M:disjointClasses(L), % TODO use hierarchy
+  member(C1,L),
+  member(C2,L),
+  dif(C1,C2),
+  findClassAssertion(C2,Ind,_,ABox),!.
+  
+check_clash(M,C1-Ind,Tab):-
+  get_abox(Tab,ABox),
+  %write('clash 8'),nl,
+  M:disjointUnion(_Class,L), % TODO use hierarchy
+  member(C1,L),
+  member(C2,L),
+  dif(C1,C2),
+  findClassAssertion(C2,Ind,_,ABox),!.
+
+check_clash(_,P-Ind1-Ind2,Tab):-
+  get_abox(Tab,ABox),
+  %write('clash 11'),nl,
+  neg_class(P,NegP),  % use of neg_class with a property
+  findPropertyAssertion(NegP,Ind1,Ind2,_,ABox),!.
+
+neg_class(complementof(c),c):- !.
+
+neg_class(C,complementOf(C)).
+
+findClassAssertion(C,Ind,Expl1,ABox):-
+  (
+    is_list(Ind) ->
+    (
+      find((classAssertion(C,sameIndividual(Ind)),Expl1),ABox)
+    ) ;
+    (
+      find((classAssertion(C,Ind),Expl1),ABox)
+    )
+  ).
+
+findPropertyAssertion(R,Ind1,Ind2,Expl1,ABox):-
+	(
+    is_list(Ind1) ->
+    (
+      Ind1S=sameIndividual(Ind1)
+    ) ;
+    (
+      Ind1S=Ind1
+    )
+  ),
+  (
+    is_list(Ind2) ->
+    (
+      Ind2S=sameIndividual(Ind2)
+    ) ;
+    (
+      Ind2S=Ind2
+    )
+  ),
+  find((propertyAssertion(R,Ind1S,Ind2S),Expl1),ABox).
 
   % ==================================================================================================================
